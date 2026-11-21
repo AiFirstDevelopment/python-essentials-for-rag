@@ -1,7 +1,7 @@
 [project]
 name = "python-essentials-for-rag"
 version = "0.1.0"
-description = "The Python a JavaScript or TypeScript developer needs to build a RAG pipeline, one chapter at a time."
+description = "The Python you need to build a RAG pipeline and an eval harness, one chapter at a time."
 requires-python = ">=3.12"
 dependencies = [
     "anthropic>=2.12.0",

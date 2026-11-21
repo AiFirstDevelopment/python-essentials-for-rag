@@ -1,9 +1,8 @@
-# Chapter 2: syntax for a JavaScript developer.
-# Blocks are indented, not braced. null is None, true is True, && is and.
+# Chapter 2: syntax. Blocks are indented. The empty value is None; the booleans are True and False.
 
 
 def greet(name, greeting="Hello", shout=False):
-    message = f"{greeting}, {name}!"          # f-string, like `${greeting}, ${name}!`
+    message = f"{greeting}, {name}!"          # an f-string puts values into text
     if shout and name is not None:
         message = message.upper()
     return message

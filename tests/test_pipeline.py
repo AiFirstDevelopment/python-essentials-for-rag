@@ -1,4 +1,4 @@
-"""The pipeline and the harness with a fake embedder and a fake model: no network, no API key (like a Jest mock)."""
+"""The pipeline and the harness with a fake embedder and a fake model: no network, no API key."""
 import asyncio
 from types import SimpleNamespace
 

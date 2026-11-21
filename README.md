@@ -1,6 +1,6 @@
 # Python Essentials for RAG
 
-The Python a JavaScript or TypeScript developer needs to build a RAG pipeline and test it with an eval harness. Each
+The Python you need to build a RAG pipeline and test it with an eval harness. Each
 file in `chapters/` is a chapter of the video; `rag/` is the pipeline and `evals/` its harness and golden set.
 
 The pipeline follows the same logic as Joel Stevick's demo pipeline
@@ -22,19 +22,19 @@ uv run python -m rag.pipeline "Can I return a sale item for a refund?"
 uv run python -m evals.harness                          # scores the answers too
 ```
 
-| Chapter | Where | The JavaScript/TypeScript you already know |
-|---|---|---|
-| 1. Setup | `chapters/01_hello.py` | node, npm |
-| 2. Syntax | `chapters/02_syntax.py` | braces, `null`, template strings |
-| 3. Data | `chapters/03_data.py` | arrays, objects, `map`/`filter`, `JSON` |
-| 4. Types | `chapters/04_types.py` | interfaces, Zod |
-| 5. Packages and imports | `chapters/05_imports.py`, `pyproject.toml` | `package.json`, `import` |
-| 6. Files | `chapters/06_files.py` | `fs`, `path` |
-| 7. NumPy | `chapters/07_vectors.py` | (JavaScript has no operator overloading) |
-| 8. Async and a model | `chapters/08_ask.py` | `async`/`await`, `Promise.all` |
-| 9. Testing | `tests/` | Jest |
-| 10. The pipeline | `rag/chunks.py`, `rag/search.py`, `rag/rerank.py`, `rag/widen.py`, `rag/pipeline.py` | |
-| 11. The eval harness | `evals/golden.jsonl`, `evals/harness.py` | |
+| Chapter | Where |
+|---|---|
+| 1. Setup | `chapters/01_hello.py` |
+| 2. Syntax | `chapters/02_syntax.py` |
+| 3. Data | `chapters/03_data.py` |
+| 4. Types | `chapters/04_types.py` |
+| 5. Packages and imports | `chapters/05_imports.py`, `pyproject.toml` |
+| 6. Files | `chapters/06_files.py` |
+| 7. NumPy | `chapters/07_vectors.py` |
+| 8. Async and a model | `chapters/08_ask.py` |
+| 9. Testing | `tests/` |
+| 10. The pipeline | `rag/chunks.py`, `rag/search.py`, `rag/rerank.py`, `rag/widen.py`, `rag/pipeline.py` |
+| 11. The eval harness | `evals/golden.jsonl`, `evals/harness.py` |
 
 `uv sync` installs PyTorch for sentence-transformers: about 650 MB on macOS, several GB on Linux with NVIDIA's CUDA
 packages. The first run also downloads a small embedding model (about 90 MB, `all-MiniLM-L6-v2`); after that, everything but the

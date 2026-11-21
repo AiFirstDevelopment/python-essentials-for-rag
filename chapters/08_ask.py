@@ -1,4 +1,4 @@
-# Chapter 8: async and calling a model. async/await as in JavaScript; asyncio.run starts the loop.
+# Chapter 8: async and calling a model. await waits without blocking; asyncio.run starts the event loop.
 import asyncio
 
 from anthropic import AsyncAnthropic
@@ -17,7 +17,7 @@ async def ask(client: AsyncAnthropic, question: str) -> str:
 
 async def main():
     client = AsyncAnthropic()                     # reads ANTHROPIC_API_KEY
-    answers = await asyncio.gather(               # like Promise.all
+    answers = await asyncio.gather(               # both calls at the same time
         ask(client, "In one sentence: what is RAG?"),
         ask(client, "In one sentence: what is an embedding?"),
     )
