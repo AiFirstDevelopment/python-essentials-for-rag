@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 from anthropic import AsyncAnthropic
+from dotenv import load_dotenv
 from pypdf import PdfReader
 
 from rag.chunks import Chunk, chunk_file
@@ -16,6 +17,7 @@ from rag.rerank import ANSWER_CHUNKS, rerank
 from rag.search import fuse, nearest
 from rag.widen import Passage, widen
 
+load_dotenv()            # ANTHROPIC_API_KEY from the .env file, if there is one
 DOCS = Path(__file__).resolve().parent.parent / "docs"
 MODEL = "claude-opus-5-5"
 POOL = 8                 # how many fused chunks the reranker reads

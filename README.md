@@ -17,7 +17,7 @@ uv sync                                                 # Python, a virtual envi
 uv run chapters/01_hello.py
 uv run pytest                                           # no API key needed
 uv run python -m evals.harness --retrieval-only         # scores the fused search on the golden set, free
-export ANTHROPIC_API_KEY=...                            # the steps below call Claude
+cp .env.example .env                                    # then paste your Anthropic API key into .env
 uv run python -m rag.pipeline "Can I return a sale item for a refund?"
 uv run python -m evals.harness                          # scores the answers too
 uv run fastapi dev app/main.py                          # a chat page at http://localhost:8000

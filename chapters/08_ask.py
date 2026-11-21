@@ -2,6 +2,9 @@
 import asyncio
 
 from anthropic import AsyncAnthropic
+from dotenv import load_dotenv
+
+load_dotenv()            # ANTHROPIC_API_KEY from .env
 
 
 async def ask(client, question):
