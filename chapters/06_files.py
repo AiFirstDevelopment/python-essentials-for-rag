@@ -8,7 +8,7 @@ docs = Path(__file__).resolve().parent.parent / "docs"
 for path in sorted(docs.iterdir()):
     print(path.name, path.suffix)
 
-with open(docs / "returns.txt") as f:          # closed when the block ends, even on an error
+with open(docs / "returns.txt", encoding="utf-8") as f:        # closed when the block ends, even on an error
     print(f.read()[:60])
 
 pdf = PdfReader(docs / "shipping.pdf")

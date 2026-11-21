@@ -14,7 +14,7 @@ chunks of about 900 characters cut at a sentence end, BM25 keyword search and ve
 curl -LsSf https://astral.sh/uv/install.sh | sh        # install uv (macOS/Linux)
 uv sync                                                 # Python, a virtual environment and the packages
 uv run chapters/01_hello.py
-uv run pytest                                           # no network, no API key
+uv run pytest                                           # no API key needed
 uv run python -m evals.harness --retrieval-only         # scores retrieval on the golden set, free
 export ANTHROPIC_API_KEY=...                            # the steps below call Claude
 uv run python -m rag.pipeline "Can I return a sale item for a refund?"
@@ -35,4 +35,18 @@ uv run python -m evals.harness                          # scores the answers too
 | 10. The pipeline | `rag/chunks.py`, `rag/search.py`, `rag/widen.py`, `rag/pipeline.py` | |
 | 11. The eval harness | `evals/golden.jsonl`, `evals/harness.py` | |
 
-The documents in `docs/` are sample policies for a fictional store.
+The first run downloads a small embedding model (about 90 MB, `all-MiniLM-L6-v2`); after that, everything but the
+model calls runs offline. The pipeline uses `claude-opus-5-5`; a full harness run makes one call per golden case.
+
+## The golden set
+
+`evals/golden.jsonl`, one case a line, with the demo's fields: the question, `expected_behavior` (`answer` or
+`fallback`), the `required_facts` a right answer must contain (each with the words that count as a match), and the
+`sources` (file and page) retrieval must find. `category` is `answerable`, `inferred` (the answer follows from the
+documents without being written in them) or `absent` (the documents don't cover it, so the right answer is "I don't
+know"). A full run marks each case `pass`, `fail` (naming the facts it missed) or `review` (it answered when it should
+have said it doesn't know: a person reads it). Known limit: a right answer that adds a phrase like "doesn't say" reads
+as a fallback.
+
+The documents in `docs/` are sample policies for a fictional store; `tools/make_pdfs.py` builds the two PDFs
+(`uv run --group tools python tools/make_pdfs.py`).

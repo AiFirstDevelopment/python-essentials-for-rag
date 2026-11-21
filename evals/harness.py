@@ -1,11 +1,14 @@
 """Chapter 11: the eval harness. Runs every case of the golden set through the pipeline and scores it.
     uv run python -m evals.harness --retrieval-only   # free: scores retrieval, never calls the model
-    uv run python -m evals.harness                    # scores the answers too (calls Claude, costs money)"""
+    uv run python -m evals.harness                    # scores the answers too (calls Claude, costs money)
+Known limit, as in the demo: a right answer that adds a phrase like "doesn't say" is read as a fallback."""
 import asyncio
-import json
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Literal
+
+from pydantic import BaseModel
 
 from rag.widen import Passage
 
@@ -13,51 +16,72 @@ GOLDEN = Path(__file__).resolve().parent / "golden.jsonl"
 FALLBACK = ("don't know", "do not know", "not in the passages", "doesn't say", "does not say")
 
 
+class Fact(BaseModel):
+    fact: str
+    match: list[str]
+
+
+class Source(BaseModel):
+    file: str
+    page: int
+
+
+class Case(BaseModel):                 # a typo in golden.jsonl fails loudly here, not silently in a score
+    id: str
+    category: Literal["answerable", "inferred", "absent"]
+    question: str
+    expected_behavior: Literal["answer", "fallback"]
+    required_facts: list[Fact]
+    sources: list[Source]
+
+
 @dataclass
 class Result:
     id: str
-    retrieved: bool                 # every expected source is inside a passage
-    status: str = "not run"         # pass, fail or review
+    retrieved: bool | None             # every expected source inside a passage; None when the case has no source
+    status: str = "not run"            # pass, fail, or review (a person reads it)
     missing: list[str] = field(default_factory=list)
 
 
-def load_cases(path: Path = GOLDEN) -> list[dict]:
-    return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+def load_cases(path: Path = GOLDEN) -> list[Case]:
+    return [Case.model_validate_json(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
-def found_sources(case: dict, passages: list[Passage]) -> bool:
-    return all(any(p.file == s["file"] and p.first_page <= s["page"] <= p.last_page for p in passages)
-               for s in case["sources"])
+def found_sources(case: Case, passages: list[Passage]) -> bool | None:
+    if not case.sources:
+        return None
+    return all(any(p.file == s.file and p.first_page <= s.page <= p.last_page for p in passages) for s in case.sources)
 
 
-def score_answer(case: dict, reply: str) -> tuple[str, list[str]]:
+def score_answer(case: Case, reply: str) -> tuple[str, list[str]]:
     text = reply.lower()
     fell_back = any(phrase in text for phrase in FALLBACK)
-    if case["expected_behavior"] == "fallback":
+    if case.expected_behavior == "fallback":
         return ("pass" if fell_back else "review"), []
-    missing = [f["fact"] for f in case["required_facts"] if not any(m.lower() in text for m in f["match"])]
+    missing = [f.fact for f in case.required_facts if not any(m.lower() in text for m in f.match)]
     return ("pass" if not missing and not fell_back else "fail"), missing
 
 
-async def run(cases: list[dict], index, client=None) -> list[Result]:
+async def run(cases: list[Case], index, client=None) -> list[Result]:
     from rag.pipeline import answer
     results = []
     for case in cases:
-        passages = index.retrieve(case["question"])
-        result = Result(case["id"], found_sources(case, passages))
+        passages = index.retrieve(case.question)
+        result = Result(case.id, found_sources(case, passages))
         if client is not None:
-            result.status, result.missing = score_answer(case, await answer(case["question"], passages, client))
+            result.status, result.missing = score_answer(case, await answer(case.question, passages, client))
         results.append(result)
     return results
 
 
 def report(results: list[Result]) -> str:
-    lines = [f"{r.id:<12} retrieved={'yes' if r.retrieved else 'NO ':<4} {r.status:<8} {', '.join(r.missing)}"
-             for r in results]
-    hits = sum(r.retrieved for r in results)
-    passed = sum(r.status == "pass" for r in results)
-    lines.append(f"retrieval {hits}/{len(results)}   answers {passed}/{len(results)} passed")
-    return "\n".join(lines)
+    mark = {True: "yes", False: "NO", None: "-"}
+    lines = [f"{r.id:<12} retrieved {mark[r.retrieved]:<4} {r.status:<8} {', '.join(r.missing)}" for r in results]
+    with_source = [r for r in results if r.retrieved is not None]
+    summary = f"retrieval {sum(r.retrieved for r in with_source)}/{len(with_source)}"
+    if any(r.status != "not run" for r in results):
+        summary += f"   answers {sum(r.status == 'pass' for r in results)}/{len(results)} passed"
+    return "\n".join(lines + [summary])
 
 
 async def main():

@@ -1,0 +1,11 @@
+Accounts and privacy. This is a sample policy for a fictional store, Trailhead Outfitters.
+
+You need an account to track orders, start returns online and earn Rewards points, but you can check out as a guest. A guest order can be returned with the order number and the email address it was placed with. You can link a guest order to an account later from the account's Orders page, as long as both use the same email address.
+
+To reset your password, choose Forgot password on the sign-in page. We email a link that works for one hour. If the email does not arrive within ten minutes, check your spam folder, then contact us; we never ask for your password by phone or email. Accounts are locked for 30 minutes after five failed sign-in attempts in a row.
+
+What we keep. We keep your name, email address, shipping addresses, order history and the last four digits of your card. We do not store full card numbers; our payment processor does. We keep order records for seven years because tax law requires it, even after you close your account.
+
+What we share. We share your address with the carrier that delivers your order and your payment details with our payment processor. We do not sell your personal information to anyone. We send marketing email only if you opt in, and every marketing email has a link to stop them; order and shipping emails are always sent.
+
+Closing your account. Choose Close account in your settings, or email privacy@trailhead.example. We close it within 30 days and delete your personal information, except the order records we must keep. Closing your account deletes your Rewards points.

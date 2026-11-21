@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 
 from rag.chunks import Chunk
 from rag.search import bm25, fuse, nearest, words
@@ -31,4 +30,6 @@ def test_fuse_lifts_a_chunk_both_searches_found():
 
 
 def test_fuse_scores_are_reciprocal_ranks():
-    assert 1 / 61 + 1 / 62 == pytest.approx(0.032522, abs=1e-6)
+    a, b, c = chunk(0, "refund refund refund"), chunk(1, "refund policy text here"), chunk(2, "other")
+    # bm25 ranks a 1st and b 2nd; vector search ranks c 1st and b 2nd: b = 1/62 + 1/62 beats a = 1/61 and c = 1/61
+    assert fuse([a, b, c], "refund", near=[c, b], limit=3)[0] is b

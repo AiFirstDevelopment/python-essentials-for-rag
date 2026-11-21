@@ -1,0 +1,10 @@
+Shipping
+This is a sample policy for a fictional store, Trailhead Outfitters.
+Standard shipping is free on orders over $75 and takes 3 to 5 business days. Orders under $75 pay a flat $6.95. Express shipping costs $19.95 and arrives in 1 to 2 business days when the order is placed before 2 p.m. Eastern; orders placed later ship the next business day. Summit members of Trailhead Rewards get express shipping free on every order.
+We ship to all 50 US states. Express is not available to P.O. boxes or to Alaska and Hawaii, which get standard shipping in 5 to 8 business days. International shipping is not available yet.
+Large items, such as tents over 15 pounds and kayaks, ship by freight. Freight costs $49 for any order, takes 7 to 10 business days, and the carrier calls you to set a delivery time. Freight orders cannot be sent to a P.O. box or changed to express.
+==PAGE==
+Tracking and delivery
+Every order gets a tracking number by email as soon as it leaves the warehouse. Orders placed on a weekend leave on Monday. If an item is out of stock after you order, we ship the rest and email you a date for the missing item, and you pay no extra shipping for the second package.
+If a package shows as delivered but you cannot find it, check with neighbors and around the building, then contact us within 7 days. We open a claim with the carrier and send a replacement or a refund once the claim is approved, usually within 5 business days. After 7 days we cannot open a claim.
+To change the shipping address, contact us before the order ships; after it ships, the carrier may let you redirect it from the tracking page for a fee they charge. We cannot change the address of a freight order once it has been booked.

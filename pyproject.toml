@@ -4,15 +4,20 @@ version = "0.1.0"
 description = "The Python a JavaScript or TypeScript developer needs to build a RAG pipeline, one chapter at a time."
 requires-python = ">=3.12"
 dependencies = [
-    "anthropic",
-    "numpy",
-    "pydantic",
-    "pypdf",
-    "sentence-transformers",
+    "anthropic>=2.12.0",
+    "numpy>=2.5.5",
+    "pydantic>=2.14.4",
+    "pypdf>=7.1.1",
+    "sentence-transformers>=6.3.0",
 ]
 
 [dependency-groups]
-dev = ["pytest"]
+dev = [
+    "pytest>=9.2.0",
+]
+tools = [
+    "reportlab>=5.1.0",
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

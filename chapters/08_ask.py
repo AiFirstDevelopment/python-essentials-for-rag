@@ -4,8 +4,7 @@ import asyncio
 from anthropic import AsyncAnthropic
 
 
-async def ask(question: str) -> str:
-    client = AsyncAnthropic()                     # reads ANTHROPIC_API_KEY
+async def ask(client: AsyncAnthropic, question: str) -> str:
     response = await client.messages.create(
         model="claude-opus-5-5",
         max_tokens=1024,
@@ -17,13 +16,14 @@ async def ask(question: str) -> str:
 
 
 async def main():
+    client = AsyncAnthropic()                     # reads ANTHROPIC_API_KEY
     answers = await asyncio.gather(               # like Promise.all
-        ask("In one sentence: what is RAG?"),
-        ask("In one sentence: what is an embedding?"),
+        ask(client, "In one sentence: what is RAG?"),
+        ask(client, "In one sentence: what is an embedding?"),
     )
     for a in answers:
         print(a)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":                        # runs only when this file is run, not when it is imported
     asyncio.run(main())

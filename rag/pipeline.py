@@ -20,7 +20,7 @@ SYSTEM = "Answer only from the passages. If the answer is not in them, say you d
 def pages(path: Path) -> list[str]:
     if path.suffix == ".pdf":
         return [page.extract_text() or "" for page in PdfReader(path).pages]
-    return [path.read_text()]
+    return [path.read_text(encoding="utf-8")]
 
 
 def load(folder: Path = DOCS) -> list[Chunk]:
