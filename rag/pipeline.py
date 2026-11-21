@@ -2,6 +2,7 @@
 rankings, widen each chunk with its neighbours, and have the model answer from those passages only.
     uv run python -m rag.pipeline "your question" """
 import asyncio
+import os
 import sys
 from pathlib import Path
 
@@ -55,6 +56,8 @@ async def answer(question: str, passages: list[Passage], client) -> str:
 
 
 def embedder():
+    os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")      # quieter output; the model is the same
+    os.environ.setdefault("TRANSFORMERS_VERBOSITY", "error")
     from sentence_transformers import SentenceTransformer
     return SentenceTransformer("all-MiniLM-L6-v2")
 

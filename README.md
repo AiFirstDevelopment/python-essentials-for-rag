@@ -35,7 +35,8 @@ uv run python -m evals.harness                          # scores the answers too
 | 10. The pipeline | `rag/chunks.py`, `rag/search.py`, `rag/widen.py`, `rag/pipeline.py` | |
 | 11. The eval harness | `evals/golden.jsonl`, `evals/harness.py` | |
 
-The first run downloads a small embedding model (about 90 MB, `all-MiniLM-L6-v2`); after that, everything but the
+`uv sync` installs PyTorch for sentence-transformers: about 650 MB on macOS, several GB on Linux with NVIDIA's CUDA
+packages. The first run also downloads a small embedding model (about 90 MB, `all-MiniLM-L6-v2`); after that, everything but the
 model calls runs offline. The pipeline uses `claude-opus-5-5`; a full harness run makes one call per golden case.
 
 ## The golden set

@@ -10,6 +10,9 @@ class Chunk:                        # like: interface Chunk { file: string; page
     page: int
     text: str
 
+    def preview(self) -> str:       # a method takes self first: Python's this, written out
+        return f"{self.file} p.{self.page}: {self.text[:30]}"
+
 
 class Question(BaseModel):          # like a Zod schema: checked when the data arrives
     text: str
@@ -18,6 +21,7 @@ class Question(BaseModel):          # like a Zod schema: checked when the data a
 
 chunk = Chunk(file="returns.txt", page=1, text="You can return any unused item within 30 days.")
 print(chunk)
+print(chunk.preview())
 
 print(Question.model_validate({"text": "How long is the return window?"}))
 try:                                # try/except is try/catch

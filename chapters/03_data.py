@@ -11,6 +11,8 @@ print(doc["id"], doc.get("author", "unknown"))  # .get gives a default instead o
 by_id = {d["id"]: d for d in [doc, {"id": "shipping", "pages": 2, "tags": []}]}
 print(list(by_id))                              # ['refunds', 'shipping']
 
+print(scores[:2], scores[::-1])                 # a slice: the first two; the whole list reversed
+
 text = json.dumps(doc)                          # JSON.stringify
 back = json.loads(text)                         # JSON.parse
 print(passed, back == doc)
