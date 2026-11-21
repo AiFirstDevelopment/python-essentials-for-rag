@@ -64,14 +64,15 @@ def score_answer(case: Case, reply: str) -> tuple[str, list[str]]:
 
 async def run(cases: list[Case], index, client=None) -> list[Result]:
     from rag.pipeline import answer
-    results = []
-    for case in cases:
+
+    async def one(case: Case) -> Result:
         passages = await index.retrieve(case.question, client)
         result = Result(case.id, found_sources(case, passages))
         if client is not None:
             result.status, result.missing = score_answer(case, await answer(case.question, passages, client))
-        results.append(result)
-    return results
+        return result
+
+    return await asyncio.gather(*(one(case) for case in cases))      # every case at the same time, results in order
 
 
 def report(results: list[Result]) -> str:

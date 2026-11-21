@@ -1,18 +1,14 @@
-# Chapter 3: lists, dicts, comprehensions, JSON.
+# Chapter 3: data.
 import json
 
 scores = [0.82, 0.91, 0.40, 0.77]
-passed = [s for s in scores if s >= 0.5]       # keep the scores of at least 0.5
-doubled = [s * 2 for s in scores]              # every score, doubled
+doc = {"id": "returns", "pages": 3}
 
-doc = {"id": "refunds", "pages": 3, "tags": ["policy", "returns"]}
-print(doc["id"], doc.get("author", "unknown"))  # get gives a default for a missing key
+passed = [s for s in scores if s >= 0.5]
+print(passed)
 
-by_id = {d["id"]: d for d in [doc, {"id": "shipping", "pages": 2, "tags": []}]}
-print(list(by_id))                              # ['refunds', 'shipping']
+print(doc.get("author", "unknown"))
+print(scores[:2], scores[::-1])
 
-print(scores[:2], scores[::-1])                 # a slice: the first two; the whole list reversed
-
-text = json.dumps(doc)                          # dict to JSON text
-back = json.loads(text)                         # JSON text to dict
-print(passed, back == doc)
+text = json.dumps(doc)
+print(json.loads(text) == doc)

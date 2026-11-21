@@ -1,30 +1,30 @@
-# Chapter 4: type hints, dataclasses, and Pydantic, which checks data at runtime.
+# Chapter 4: types.
 from dataclasses import dataclass
 
 from pydantic import BaseModel, ValidationError
 
 
+def first_words(text: str, n: int = 5) -> str:
+    return " ".join(text.split()[:n])
+
+
 @dataclass
-class Chunk:                        # Python writes __init__(self, file, page, text) for you
-    file: str                       # the same fields as rag/chunks.py, which adds seq for widening
+class Chunk:
+    file: str
     page: int
     text: str
 
-    def preview(self) -> str:       # a method takes self first: the object it was called on
-        return f"{self.file} p.{self.page}: {self.text[:30]}"
+    def preview(self) -> str:
+        return f"{self.file} p.{self.page}: {first_words(self.text)}"
 
 
-class Question(BaseModel):          # checked when the data arrives
+class Question(BaseModel):
     text: str
     top: int = 3
 
 
-chunk = Chunk(file="returns.txt", page=1, text="You can return any unused item within 30 days.")
-print(chunk)
-print(chunk.preview())
-
-print(Question.model_validate({"text": "How long is the return window?"}))
+print(Chunk("returns.txt", 1, "You can return any unused item within 30 days.").preview())
 try:
     Question.model_validate({"text": "Hi", "top": "lots"})
 except ValidationError as e:
-    print("rejected:", e.errors()[0]["msg"])
+    print(e.errors()[0]["msg"])
