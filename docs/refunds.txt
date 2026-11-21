@@ -1,0 +1,10 @@
+Returns and refunds (a sample policy for a fictional store, Trailhead Outfitters)
+
+You can return any unused item within 30 days of delivery for a full refund. Items must be in their original
+packaging with the tags attached. Sale items can be returned within 14 days and are refunded as store credit.
+
+To start a return, sign in to your account, open the order and choose Return an item. We email a prepaid label.
+Refunds go back to the original payment method within 5 business days of the item reaching our warehouse.
+
+Gift cards, opened food and personalized items cannot be returned. Damaged or wrong items can be returned at any
+time within 90 days at no cost; choose "It arrived damaged" when you start the return and attach a photo.
