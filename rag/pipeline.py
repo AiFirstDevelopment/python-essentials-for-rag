@@ -1,5 +1,6 @@
 """Chapter 10: the pipeline. Read and chunk the documents, search them two ways (BM25 and vectors), fuse the
-rankings, widen each chunk with its neighbours, and have the model answer from those passages only.
+rankings, let a reranker order the best of them, widen each chunk with its neighbours, and have the model answer
+from those passages only.
     uv run python -m rag.pipeline "your question" """
 import asyncio
 import os
@@ -10,11 +11,13 @@ from anthropic import AsyncAnthropic
 from pypdf import PdfReader
 
 from rag.chunks import Chunk, chunk_file
+from rag.rerank import ANSWER_CHUNKS, rerank
 from rag.search import fuse, nearest
 from rag.widen import Passage, widen
 
 DOCS = Path(__file__).resolve().parent.parent / "docs"
 MODEL = "claude-opus-5-5"
+POOL = 8                 # how many fused chunks the reranker reads
 SYSTEM = "Answer only from the passages. If the answer is not in them, say you don't know."
 
 
@@ -36,10 +39,17 @@ class Index:
         self.chunks, self.embedder = chunks, embedder
         self.vectors = embedder.encode([c.text for c in chunks], normalize_embeddings=True)
 
-    def retrieve(self, question: str, top: int = 3) -> list[Passage]:
+    def search(self, question: str, limit: int = POOL) -> list[Chunk]:
+        """Keyword search and vector search, fused: free, no model call."""
         query = self.embedder.encode([question], normalize_embeddings=True)[0]
-        near = [self.chunks[i] for i in nearest(self.vectors, query, top * 2)]
-        return widen(fuse(self.chunks, question, near, top), self.chunks)
+        near = [self.chunks[i] for i in nearest(self.vectors, query, limit)]
+        return fuse(self.chunks, question, near, limit)
+
+    async def retrieve(self, question: str, client=None) -> list[Passage]:
+        """The passages to answer from. With a client, the reranker orders the pool; without one, fusion order."""
+        pool = self.search(question)
+        chosen = await rerank(client, question, pool) if client else pool[:ANSWER_CHUNKS]
+        return widen(chosen, self.chunks)
 
 
 async def answer(question: str, passages: list[Passage], client) -> str:
@@ -64,8 +74,8 @@ def embedder():
 
 async def main():
     question = " ".join(sys.argv[1:]) or "Can I return a sale item for a refund?"
-    index = Index(load(), embedder())
-    print(await answer(question, index.retrieve(question), AsyncAnthropic()))
+    index, client = Index(load(), embedder()), AsyncAnthropic()
+    print(await answer(question, await index.retrieve(question, client), client))
 
 
 if __name__ == "__main__":

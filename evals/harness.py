@@ -1,7 +1,7 @@
 """Chapter 11: the eval harness. Runs every case of the golden set through the pipeline and scores it.
-    uv run python -m evals.harness --retrieval-only   # free: scores retrieval, never calls the model
-    uv run python -m evals.harness                    # scores the answers too (calls Claude, costs money)
-Known limit, as in the demo: a right answer that adds a phrase like "doesn't say" is read as a fallback."""
+    uv run python -m evals.harness --retrieval-only   # free: scores the fused search, no model call, no reranker
+    uv run python -m evals.harness                    # reranks, answers and scores both (calls Claude, costs money)
+A fallback case passes when the reply says it doesn't know; an answer case passes when it holds every required fact."""
 import asyncio
 import sys
 from dataclasses import dataclass, field
@@ -59,14 +59,14 @@ def score_answer(case: Case, reply: str) -> tuple[str, list[str]]:
     if case.expected_behavior == "fallback":
         return ("pass" if fell_back else "review"), []
     missing = [f.fact for f in case.required_facts if not any(m.lower() in text for m in f.match)]
-    return ("pass" if not missing and not fell_back else "fail"), missing
+    return ("fail" if missing else "pass"), missing      # a right answer with a caveat still passes
 
 
 async def run(cases: list[Case], index, client=None) -> list[Result]:
     from rag.pipeline import answer
     results = []
     for case in cases:
-        passages = index.retrieve(case.question)
+        passages = await index.retrieve(case.question, client)
         result = Result(case.id, found_sources(case, passages))
         if client is not None:
             result.status, result.missing = score_answer(case, await answer(case.question, passages, client))

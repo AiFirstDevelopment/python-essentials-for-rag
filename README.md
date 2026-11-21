@@ -6,7 +6,8 @@ file in `chapters/` is a chapter of the video; `rag/` is the pipeline and `evals
 The pipeline follows the same logic as Joel Stevick's demo pipeline
 ([joelstevick-demo-rag-pipeline](https://github.com/AiFirstDevelopment/joelstevick-demo-rag-pipeline)), in Python:
 chunks of about 900 characters cut at a sentence end, BM25 keyword search and vector search fused by reciprocal rank
-(k = 60), and each chosen chunk widened with its neighbours before the model answers from those passages only.
+(k = 60), Claude Haiku reranking the fused pool, and each chosen chunk widened with its neighbours before the model
+answers from those passages only.
 
 ## Run it
 
@@ -15,7 +16,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh        # install uv (macOS/Linux
 uv sync                                                 # Python, a virtual environment and the packages
 uv run chapters/01_hello.py
 uv run pytest                                           # no API key needed
-uv run python -m evals.harness --retrieval-only         # scores retrieval on the golden set, free
+uv run python -m evals.harness --retrieval-only         # scores the fused search on the golden set, free
 export ANTHROPIC_API_KEY=...                            # the steps below call Claude
 uv run python -m rag.pipeline "Can I return a sale item for a refund?"
 uv run python -m evals.harness                          # scores the answers too
@@ -32,12 +33,13 @@ uv run python -m evals.harness                          # scores the answers too
 | 7. NumPy | `chapters/07_vectors.py` | (JavaScript has no operator overloading) |
 | 8. Async and a model | `chapters/08_ask.py` | `async`/`await`, `Promise.all` |
 | 9. Testing | `tests/` | Jest |
-| 10. The pipeline | `rag/chunks.py`, `rag/search.py`, `rag/widen.py`, `rag/pipeline.py` | |
+| 10. The pipeline | `rag/chunks.py`, `rag/search.py`, `rag/rerank.py`, `rag/widen.py`, `rag/pipeline.py` | |
 | 11. The eval harness | `evals/golden.jsonl`, `evals/harness.py` | |
 
 `uv sync` installs PyTorch for sentence-transformers: about 650 MB on macOS, several GB on Linux with NVIDIA's CUDA
 packages. The first run also downloads a small embedding model (about 90 MB, `all-MiniLM-L6-v2`); after that, everything but the
-model calls runs offline. The pipeline uses `claude-opus-5-5`; a full harness run makes one call per golden case.
+model calls runs offline. The pipeline answers with `claude-opus-5-5` and reranks with `claude-haiku-5-5`; a full harness run makes two
+calls per golden case.
 
 ## The golden set
 
@@ -46,8 +48,7 @@ model calls runs offline. The pipeline uses `claude-opus-5-5`; a full harness ru
 `sources` (file and page) retrieval must find. `category` is `answerable`, `inferred` (the answer follows from the
 documents without being written in them) or `absent` (the documents don't cover it, so the right answer is "I don't
 know"). A full run marks each case `pass`, `fail` (naming the facts it missed) or `review` (it answered when it should
-have said it doesn't know: a person reads it). Known limit: a right answer that adds a phrase like "doesn't say" reads
-as a fallback.
+have said it doesn't know: a person reads it).
 
 The documents in `docs/` are sample policies for a fictional store; `tools/make_pdfs.py` builds the two PDFs
 (`uv run --group tools python tools/make_pdfs.py`).

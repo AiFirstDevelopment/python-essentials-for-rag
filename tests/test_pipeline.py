@@ -17,13 +17,16 @@ class FakeEmbedder:
 
 
 class FakeClient:
-    def __init__(self, reply="Sale items can be returned within 14 days for store credit."):
-        self.reply, self.sent = reply, None
-        self.messages = SimpleNamespace(create=self.create)
+    def __init__(self, reply="Sale items can be returned within 14 days for store credit.", ranked=(0,)):
+        self.reply, self.ranked, self.sent = reply, list(ranked), None
+        self.messages = SimpleNamespace(create=self.create, parse=self.parse)
 
     async def create(self, **request):
         self.sent = request
         return SimpleNamespace(stop_reason="end_turn", content=[SimpleNamespace(type="text", text=self.reply)])
+
+    async def parse(self, **request):          # the reranker's call
+        return SimpleNamespace(parsed_output=SimpleNamespace(ranked=self.ranked))
 
 
 def case(behavior="answer", facts=(), sources=()):
@@ -40,7 +43,7 @@ def test_load_reads_every_document_and_every_pdf_page():
 
 def test_retrieval_sends_the_right_document_not_every_document():
     index = Index(load(), FakeEmbedder())
-    passages = index.retrieve("Can I get a refund on a sale item?")
+    passages = asyncio.run(index.retrieve("Can I get a refund on a sale item?"))
     assert any("store credit" in p.text for p in passages)
     assert "gear-care.pdf" not in {p.file for p in passages}
 
@@ -62,7 +65,8 @@ def test_found_sources_reads_page_ranges_and_files():
 def test_score_answer():
     assert score_answer(case(facts=["14 days"]), "Within 14 days.") == ("pass", [])
     assert score_answer(case(facts=["14 days"]), "Within 30 days.") == ("fail", ["14 days"])
-    assert score_answer(case(facts=["14 days"]), "I don't know, 14 days?") == ("fail", [])
+    assert score_answer(case(facts=["14 days"]), "I don't know.") == ("fail", ["14 days"])
+    assert score_answer(case(facts=["14 days"]), "14 days. It doesn't say who pays shipping.") == ("pass", [])
     assert score_answer(case("fallback"), "I don't know.") == ("pass", [])
     assert score_answer(case("fallback"), "We open at 9.") == ("review", [])
 
