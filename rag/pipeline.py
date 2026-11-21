@@ -19,7 +19,7 @@ from rag.widen import Passage, widen
 DOCS = Path(__file__).resolve().parent.parent / "docs"
 MODEL = "claude-opus-5-5"
 POOL = 8                 # how many fused chunks the reranker reads
-SYSTEM = "Answer only from the passages. If the answer is not in them, say you don't know."
+SYSTEM = "Answer only from the passages, in a few plain sentences without Markdown. If the answer is not in them, say you don't know."
 
 
 def pages(path: Path) -> list[str]:

@@ -20,6 +20,7 @@ uv run python -m evals.harness --retrieval-only         # scores the fused searc
 export ANTHROPIC_API_KEY=...                            # the steps below call Claude
 uv run python -m rag.pipeline "Can I return a sale item for a refund?"
 uv run python -m evals.harness                          # scores the answers too
+uv run fastapi dev app/main.py                          # a chat page at http://localhost:8000
 uv run --with jupyter jupyter lab                       # opens evals/explore.ipynb in your browser
 ```
 
@@ -36,7 +37,8 @@ uv run --with jupyter jupyter lab                       # opens evals/explore.ip
 | 9. Testing | `tests/` |
 | 10. The pipeline | `rag/chunks.py`, `rag/search.py`, `rag/rerank.py`, `rag/widen.py`, `rag/pipeline.py` |
 | 11. The eval harness | `evals/golden.jsonl`, `evals/harness.py` |
-| 12. Notebooks | `evals/explore.ipynb` |
+| 12. From script to chatbot | `app/main.py`, `app/index.html` |
+| 13. Notebooks | `evals/explore.ipynb` |
 
 `uv sync` installs PyTorch for sentence-transformers: about 650 MB on macOS, several GB on Linux with NVIDIA's CUDA
 packages. The first run also downloads a small embedding model (about 90 MB, `all-MiniLM-L6-v2`); after that, everything but the

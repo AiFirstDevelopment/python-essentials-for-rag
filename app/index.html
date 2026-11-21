@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ask the store policies</title>
+<style>
+  body { font: 18px/1.5 system-ui, sans-serif; background: #111827; color: #e5e7eb; max-width: 760px; margin: 0 auto; padding: 24px 16px; }
+  h1 { font-size: 24px; }
+  .msg { padding: 12px 16px; border-radius: 12px; margin: 12px 0; white-space: pre-wrap; }
+  .you { background: #1f2937; }
+  .bot { background: #0f2a2a; border: 1px solid #134e4a; }
+  .sources { color: #9ca3af; font-size: 14px; margin-top: 8px; }
+  form { display: flex; gap: 8px; margin-top: 16px; }
+  input { flex: 1; font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid #374151; background: #0b1220; color: inherit; }
+  button { font: inherit; padding: 10px 16px; border-radius: 10px; border: 0; background: #14b8a6; color: #04201d; cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>Ask the store policies</h1>
+<div id="log"></div>
+<form id="ask">
+  <input id="q" placeholder="Can I return a sale item?" autocomplete="off" required>
+  <button>Ask</button>
+</form>
+<script>
+const log = document.getElementById("log");
+function add(cls, text, sources) {
+  const div = document.createElement("div");
+  div.className = "msg " + cls;
+  div.textContent = text;                               // text, never HTML: the answer cannot inject markup
+  if (sources) {
+    const s = document.createElement("div");
+    s.className = "sources";
+    s.textContent = "Sources: " + sources.join("; ");
+    div.appendChild(s);
+  }
+  log.appendChild(div);
+  return div;
+}
+document.getElementById("ask").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const input = document.getElementById("q");
+  const question = input.value.trim();
+  input.value = "";
+  add("you", question);
+  const waiting = add("bot", "Searching the documents...");
+  try {
+    const response = await fetch("/ask", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({question}),
+    });
+    const reply = await response.json();
+    waiting.remove();
+    add("bot", reply.answer, reply.sources);
+  } catch (error) {
+    waiting.textContent = "Something went wrong: " + error;
+  }
+});
+</script>
+</body>
+</html>
