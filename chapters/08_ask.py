@@ -19,8 +19,8 @@ async def ask(client, question):
 async def main():
     client = AsyncAnthropic()
     answers = await asyncio.gather(
-        ask(client, "In one sentence, what is RAG?"),
-        ask(client, "In one sentence, what is an embedding?"),
+        ask(client, "In one sentence, what is a Python list?"),
+        ask(client, "In one sentence, what is a Python dict?"),
     )
     print(answers)
 

@@ -1,5 +1,4 @@
-"""A page's text cut into the pieces the pipeline retrieves: the demo pipeline's chunkPage, in Python.
-About CHUNK_CHARS a piece, cut at a sentence end past the halfway mark, else at a space. A piece never crosses a page."""
+"""A page's text cut into pieces of about CHUNK_CHARS characters each, cut at a sentence end past the halfway mark, else at a space. A piece never crosses a page."""
 from dataclasses import dataclass
 
 CHUNK_CHARS = 900
@@ -10,7 +9,7 @@ ENDS = (". ", "? ", "! ", ".\n", "?\n", "!\n")
 class Chunk:
     file: str
     page: int
-    seq: int          # its place in its file's order of chunks, for widening
+    seq: int          # its place in its file's order of chunks
     text: str
 
 
