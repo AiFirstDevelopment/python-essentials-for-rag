@@ -15,5 +15,5 @@ print(greet("Ada"))
 print(greet("Ada", shout=True))
 print(greet("Ada", greeting="Hi"))
 
-for i, word in enumerate(["read", "chunk", "embed"]):
+for i, word in enumerate(["red", "green", "blue"]):
     print(i, word)
